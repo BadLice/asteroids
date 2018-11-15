@@ -1,4 +1,21 @@
-class Player
+var tr;
+
+function setup()
+{
+  createCanvas(600, 600);
+
+  tr = new Try(300, 300, 50, 90);
+}
+
+function draw()
+{
+  background(0)
+  tr.draw();
+  tr.update();
+
+}
+
+class Try
 {
   constructor(x, y, r, angle)
   {
@@ -8,9 +25,9 @@ class Player
     this.friction = createVector(0, 0);
     this.maxForce = 0.15;
     this.maxSpeed = 10;
-
+    // this.x = x;
+    // this.y = y;
     this.r = r;
-
     this.angle = angle; //in degrees
     this.rotationSpeed = 3;
     this.life = 100;
@@ -18,59 +35,12 @@ class Player
 
     this.bulletLease = 0.3; //in seconds
     this.timex = 0;
-    this.bullets = [];
   }
 
-  shot()
-  {
-    this.bullets.push(new Bullet(this.position.x, this.position.y, this.angle));
-  }
 
-  drawBsullets()
-  {
-    for (var i = this.bullets.length - 1; i >= 0; i--)
-    {
-      if (this.bullets[i].position.x < -500 || this.bullets[i].position.x > width + 500 || this.bullets[i].position.y < -500 || this.bullets[i].position.y > height + 500)
-      {
-        this.bullets.splice(i, 1);
-      }
-      if (this.bullets[i].alive)
-      {
-        this.bullets[i].draw();
-        this.bullets[i].update();
-        this.bullets[i].collision()
-      }
-    }
-  }
-
-  gameOver()
-  {
-    if (this.life <= 0)
-    {
-      stroke(255, 0, 0);
-      textSize(56);
-      text("GAME OVER!", width / 2 - 175, height / 2);
-      frameRate(0);
-    }
-  }
-
-  collision()
-  {
-    for (var i = asteroids.length - 1; i >= 0; i--)
-    {
-      if (dist(this.position.x, this.position.y, asteroids[i].position.x, asteroids[i].position.y) < asteroids[i].r)
-      {
-        this.life -= asteroids[i].r;
-        asteroids.splice(i, 1);
-      }
-    }
-  }
 
   draw()
   {
-    this.drawBsullets();
-    this.gameOver();
-
     push();
     noFill();
     stroke(lerpColor(color(255, 0, 0), color(0, 255, 0), this.life / 100));
@@ -86,15 +56,6 @@ class Player
 
   update()
   {
-    this.collision();
-
-    // if (millis() - this.timex > 1000 * this.bulletLease)
-    if (mouseIsPressed && (millis() - this.timex > 1000 * this.bulletLease))
-    {
-      this.timex = millis();
-      this.shot();
-    }
-
     var target = createVector(0, 0);
     var desired = createVector(0, 0);
     var steer = createVector(0, 0);
@@ -102,7 +63,7 @@ class Player
     this.friction.mult(-0.02);
     //PVector steer = PVector.sub(desired,velocity);
 
-    if (keyIsDown(32))
+    if (mouseIsPressed)
     {
       // this.acceleration.add(1, 0);
       target = p5.Vector.add(this.position, createVector(100 * cos(radians(this.angle - 90)), 100 * sin(radians(this.angle - 90))));
@@ -127,6 +88,13 @@ class Player
 
 
     this.angle = degrees(atan2(this.position.y - mouseY, this.position.x - mouseX)) - 90;
+    // this.angle = degrees(atan((this.position.y - mouseY) / (this.position.x - mouseX))) + 90; va bene ma funziona solo per (0,PI), va modificata e diventa una atan2 per cui è inutile usarla così
+
 
   }
 }
+
+// function arcctg(x)
+// {
+//   return Math.PI / 2 - Math.atan(x);
+// }

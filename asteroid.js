@@ -24,7 +24,7 @@ class Asteroid
 
       }
 
-      this.position = createVector(x, random(height));
+      this.position = createVector(x, random(-height * 2 / 3, height * 2 / 3));
     }
     else
     {

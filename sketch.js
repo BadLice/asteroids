@@ -1,7 +1,7 @@
 var player;
 var asteroids;
 var timex = 0;
-var timeLease = 0.9; //in seconds
+var timeLease = 0.9; //in seconds, used to spawn new asteroids
 
 var timeLease2 = 10; //in seconds, used to increase difficulty
 var timex2 = 0;
