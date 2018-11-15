@@ -13,13 +13,17 @@ class Player
 
     this.angle = angle; //in degrees
     this.rotationSpeed = 3;
-    this.life = 100;
+    this.maxLife = 100;
+    this.life = this.maxLife;
     this.score = 0;
 
     this.bulletLease = 0.3; //in seconds
     this.timex = 0;
     this.bullets = [];
     this.canShot = true;
+
+    this.bonus = [];
+    this.precHardness = getHardness();
   }
 
   shot()
@@ -27,20 +31,35 @@ class Player
     this.bullets.push(new Bullet(this.position.x, this.position.y, this.angle));
   }
 
-  drawBsullets()
+  drawBullets()
   {
     for (var i = this.bullets.length - 1; i >= 0; i--)
     {
-      if (this.bullets[i].position.x < -500 || this.bullets[i].position.x > width + 500 || this.bullets[i].position.y < -500 || this.bullets[i].position.y > height + 500)
-      {
-        this.bullets.splice(i, 1);
-      }
       if (this.bullets[i].alive)
       {
         this.bullets[i].draw();
         this.bullets[i].update();
         this.bullets[i].collision()
       }
+
+      if (this.bullets[i].position.x < -500 || this.bullets[i].position.x > width + 500 || this.bullets[i].position.y < -500 || this.bullets[i].position.y > height + 500)
+      {
+        this.bullets.splice(i, 1);
+      }
+    }
+  }
+
+  drawBonus()
+  {
+    for (var i = this.bonus.length - 1; i >= 0; i--)
+    {
+      this.bonus[i].draw();
+      if (dist(this.position.x, this.position.y, this.bonus[i].x, this.bonus[i].y) < this.bonus[i].r + 10)
+      {
+        this.bonus[i].addLife();
+        this.bonus.splice(i, 1);
+      }
+      else if (this.bonus[i].dead) this.bonus.splice(i, 1);
     }
   }
 
@@ -48,6 +67,10 @@ class Player
   {
     if (this.life <= 0)
     {
+      stroke(0, 255, 255);
+      textSize(56);
+      text("Score: " + floor(this.score), width / 2 - 175, height / 2 - 50);
+
       stroke(255, 0, 0);
       textSize(56);
       text("GAME OVER!", width / 2 - 175, height / 2);
@@ -67,9 +90,41 @@ class Player
     }
   }
 
+  spawnBonus()
+  {
+    if (getHardness() !== this.precHardness)
+    {
+      this.precHardness = getHardness();
+      for (var i = 0; i < 5; i++)
+      {
+        this.bonus.push(new Bonus());
+      }
+    }
+  }
+
+  drawRocket()
+  {
+    push();
+    stroke(255, 136, 0);
+    fill(255, 255, 0);
+    translate(this.position.x, this.position.y);
+    rotate(radians(this.angle));
+    for (var i = 0; i < random(5); i++)
+    {
+      beginShape();
+      vertex(-this.r / 8, this.r / 4);
+      vertex(this.r / 8, this.r / 4);
+      vertex(random(-this.r / 6, this.r / 6), this.r / 2);
+      endShape(CLOSE);
+    }
+    pop();
+  }
+
   draw()
   {
-    this.drawBsullets();
+    this.drawBullets();
+    this.drawBonus();
+    this.spawnBonus();
     this.gameOver();
 
     push();
@@ -114,6 +169,7 @@ class Player
 
       steer = p5.Vector.sub(desired, this.velocity);
       steer.limit(this.maxForce);
+      this.drawRocket();
     }
 
     this.acceleration.add(steer);

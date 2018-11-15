@@ -7,7 +7,7 @@ class Bullet
     this.h = 10;
     this.w = 2;
     this.position = createVector(x, y);
-    this.velocity = createVector(0, -3);
+    this.velocity = createVector(0, -10);
     this.velocity.rotate(radians(this.angle));
     this.col = color(random(50, 255), random(50, 255), random(50, 255));
   }
@@ -34,7 +34,7 @@ class Bullet
     {
       if (dist(this.position.x, this.position.y, asteroids[i].position.x, asteroids[i].position.y) < asteroids[i].r && this.alive)
       {
-        player.score += asteroids[i].r;
+        player.score += asteroids[i].r * getHardness();
         if (asteroids[i].r / 2 > 10)
         {
           asteroids.push(new Asteroid(asteroids[i].position.x, asteroids[i].position.y, asteroids[i].velocity.x, asteroids[i].velocity.y, asteroids[i].r));

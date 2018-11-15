@@ -3,12 +3,12 @@ var asteroids;
 var timex = 0;
 var timeLease = 0.9; //in seconds, used to spawn new asteroids
 
-var timeLease2 = 10; //in seconds, used to increase difficulty
+var timeLease2 = 30; //in seconds, used to increase difficulty
 var timex2 = 0;
 
 function setup()
 {
-  createCanvas(600, 600);
+  createCanvas(800, 800);
   player = new Player(300, 300, 50, 90);
   asteroids = [];
   initAsteroids();
@@ -40,7 +40,8 @@ function drawGUI()
   stroke(255, 0, 0);
   text(floor(player.score), 15, 30);
   stroke(0, 0, 255);
-  text(map(timeLease, 0.9, 0.5, 1, 10).toFixed(0), 290, 30);
+  text("Lvl: " + getHardness(), width / 2 - 20, 30);
+  text((timeLease2 - ((millis() - timex2) / 1000)).toFixed(1), width / 2 - 10, 50);
 }
 
 function updateAsteroids()
@@ -70,4 +71,9 @@ function initAsteroids()
   {
     asteroids.push(new Asteroid());
   }
+}
+
+function getHardness()
+{
+  return map(timeLease, 0.9, 0.5, 1, 10).toFixed(0);
 }
