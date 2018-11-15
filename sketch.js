@@ -39,6 +39,8 @@ function drawGUI()
   text(floor(player.life), width - 50, 30);
   stroke(255, 0, 0);
   text(floor(player.score), 15, 30);
+  stroke(0, 0, 255);
+  text(map(timeLease, 0.9, 0.5, 1, 10).toFixed(0), 290, 30);
 }
 
 function updateAsteroids()

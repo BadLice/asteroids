@@ -19,6 +19,7 @@ class Player
     this.bulletLease = 0.3; //in seconds
     this.timex = 0;
     this.bullets = [];
+    this.canShot = true;
   }
 
   shot()
@@ -88,45 +89,58 @@ class Player
   {
     this.collision();
 
-    // if (millis() - this.timex > 1000 * this.bulletLease)
-    if (mouseIsPressed && (millis() - this.timex > 1000 * this.bulletLease))
+    if (mouseIsPressed)
     {
-      this.timex = millis();
-      this.shot();
+      if (this.canShot && (millis() - this.timex > 1000 * this.bulletLease))
+      {
+        this.timex = millis();
+        this.shot();
+        this.canShot = false;
+      }
     }
+    else
+      this.canShot = true;
 
     var target = createVector(0, 0);
     var desired = createVector(0, 0);
     var steer = createVector(0, 0);
     this.friction = this.velocity.copy();
     this.friction.mult(-0.02);
-    //PVector steer = PVector.sub(desired,velocity);
 
     if (keyIsDown(32))
     {
-      // this.acceleration.add(1, 0);
       target = p5.Vector.add(this.position, createVector(100 * cos(radians(this.angle - 90)), 100 * sin(radians(this.angle - 90))));
       desired = p5.Vector.sub(target, this.position);
 
-      stroke(255, 255, 255)
-      point(desired.x, desired.y);
       steer = p5.Vector.sub(desired, this.velocity);
       steer.limit(this.maxForce);
-
-      //y=x*cotg(angle)
-      //cotg(angle)=y/x
-      //arccotg((y2-y1)/(x2-x1));
-
     }
+
     this.acceleration.add(steer);
     this.velocity.add(this.acceleration);
     this.velocity.add(this.friction);
     this.velocity.limit(this.maxSpeed);
-    this.position.add(this.velocity);
-    this.acceleration.mult(0);
 
+    var precpos = this.position.copy();
+
+    this.position.add(this.velocity);
+
+    if (!this.isInBounds(this.position.x, this.position.y))
+      this.position = precpos.copy();
+
+    this.acceleration.mult(0);
 
     this.angle = degrees(atan2(this.position.y - mouseY, this.position.x - mouseX)) - 90;
 
+  }
+
+  isInBounds()
+  {
+    return (this.position.x < width + 50 && this.position.x > -50 && this.position.y > -50 && this.position.y < height + 50);
+  }
+
+  isInBounds(x, y)
+  {
+    return (x < width + 50 && x > -50 && y > -50 && y < height + 50);
   }
 }
